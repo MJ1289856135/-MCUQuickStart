@@ -354,9 +354,6 @@ class ProjectGenerator:
             self._resolve_gcc_startup_from_sdk(output_dir, chip_config, startup_file)
 
         if not target.exists():
-            self._resolve_gcc_startup_from_sdk(output_dir, chip_config, startup_file)
-
-        if not target.exists():
             family = chip_config.get("family", "")
             raise FileNotFoundError(
                 f"GCC startup file '{startup_file}' not found.\n"
