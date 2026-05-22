@@ -341,9 +341,11 @@ class ProjectGenerator:
         if ld_template.exists():
             render(ld_template, output_dir / f"{project_name}.ld", variables)
 
-        # Generate filtered source file list (respects fwlib_exclude, dedup by name)
+        # Generate filtered source file lists (SDK vs user code, dedup by name)
         exclude_fwlib = set(chip_config.get("fwlib_exclude", []))
-        c_sources = []
+        sdk_dirs = {"CMSIS", "FIRMWARE/Source"}
+        sdk_sources = []
+        user_sources = []
         seen = set()
         for d, pattern in [("CMSIS", "**/*.c"), ("FIRMWARE/Source", "*.c"),
                            ("SYSTEM", "**/*.c"), ("USER", "*.c"),
@@ -354,8 +356,12 @@ class ProjectGenerator:
                     if f.name not in exclude_fwlib and f.name not in seen:
                         seen.add(f.name)
                         rel = f.relative_to(output_dir).as_posix()
-                        c_sources.append(f"    {rel}")
-        variables["CMAKE_SOURCES"] = "\n".join(c_sources)
+                        if d in sdk_dirs:
+                            sdk_sources.append(f"    {rel}")
+                        else:
+                            user_sources.append(f"    {rel}")
+        variables["SDK_SOURCES"] = "\n".join(sdk_sources)
+        variables["USER_SOURCES"] = "\n".join(user_sources)
 
         # Render CMakeLists.txt
         cmake_template = self._templates_dir / "common" / "CMakeLists.txt"

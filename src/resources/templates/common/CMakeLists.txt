@@ -22,7 +22,6 @@ add_compile_options(
     -fmessage-length=0
     -Wall
     -Wno-unused-function
-    -Wno-misleading-indentation
 )
 
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
@@ -51,15 +50,20 @@ set_source_files_properties(
 )
 enable_language(ASM)
 
-# Collect sources (pre-filtered by generator to exclude unsupported files)
-set(SOURCES
+# SDK sources (CMSIS + FIRMWARE — suppress all SDK warnings)
+set(SDK_SOURCES
     STARTUP/{{STARTUP_FILE}}
-    {{CMAKE_SOURCES}}
+    {{SDK_SOURCES}}
     {{FREERTOS_CMAKE_SOURCES}}
 )
 
-# Build target
-add_executable(${PROJECT_NAME} ${SOURCES})
+# User sources (app + driver + system — keep warnings)
+set(USER_SOURCES
+    {{USER_SOURCES}}
+)
+
+add_executable(${PROJECT_NAME} ${SDK_SOURCES} ${USER_SOURCES})
+set_source_files_properties(${SDK_SOURCES} PROPERTIES COMPILE_FLAGS "-w")
 
 # Include directories
 # System includes (suppress SDK warnings)
