@@ -61,12 +61,17 @@ set(SOURCES
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 # Include directories
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/APP
+# System includes (suppress SDK warnings)
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/CMSIS
     ${CMAKE_CURRENT_SOURCE_DIR}/CMSIS/{{DEVICE_INC_REL}}/Include
     ${CMAKE_CURRENT_SOURCE_DIR}/FIRMWARE/Include
     {{FREERTOS_CMAKE_INCLUDES}}
+)
+
+# User includes (keep warnings for user code)
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/APP
     ${CMAKE_CURRENT_SOURCE_DIR}/DRIVER
     ${CMAKE_CURRENT_SOURCE_DIR}/HARDWARE
     ${CMAKE_CURRENT_SOURCE_DIR}/SYSTEM/delay
