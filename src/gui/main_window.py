@@ -141,6 +141,8 @@ class MainWindow(QMainWindow):
         lib_layout = QVBoxLayout(self._lib_group)
         self._lib_freertos = QCheckBox()
         lib_layout.addWidget(self._lib_freertos)
+        self._lib_gcc = QCheckBox()
+        lib_layout.addWidget(self._lib_gcc)
         layout.addWidget(self._lib_group)
 
         # --- Generate Button ---
@@ -179,6 +181,7 @@ class MainWindow(QMainWindow):
         self._log_group.setTitle(self._tr("log"))
         self._lib_group.setTitle(self._tr("optional_libs"))
         self._lib_freertos.setText(self._tr("lib_freertos"))
+        self._lib_gcc.setText(self._tr("lib_gcc"))
         self._help_btn.setText(self._tr("help"))
         self._hxtal_label.setText(self._tr("hxtal_freq"))
 
@@ -260,7 +263,7 @@ class MainWindow(QMainWindow):
         if self._lib_freertos.isChecked():
             optional_libs.append("freertos")
 
-        build_system = "both"
+        build_system = "both" if self._lib_gcc.isChecked() else "keil"
 
         try:
             output_path = output_dir / proj_name
